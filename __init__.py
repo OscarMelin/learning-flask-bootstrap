@@ -9,5 +9,9 @@ def homepage():
 def dashboard():
     return render_template("dashboard.html")
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return("four oh four")
+
 if __name__ == "__main__":
     app.run()
