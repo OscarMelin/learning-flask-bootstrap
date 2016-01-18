@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect
 app = Flask(__name__)
 
+
+
 @app.route("/")
 def homepage():
     return render_template("main.html")
@@ -11,7 +13,25 @@ def dashboard():
 
 @app.route("/login/", methods = ["GET", "POST"])
 def login_page():
-    return render_template("login.html")
+
+    error = None
+
+    try:
+        if request.method == "POST":
+            attempted_username = request.form["username"]
+            attempted_password = request.form["password"]
+            
+
+            if attempted_username == "admin":
+                return redirect(url_for("dashboard"))
+            else:
+                error = "Fel fel blaha"
+
+        return render_template("login.html", error=error)
+
+    except Exception as e:
+        return render_template("login.html", error = e)
+    
 
 @app.errorhandler(404)
 def page_not_found(e):
