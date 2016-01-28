@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect
-app = Flask(__name__)
+from dbconnect import connection
 
+app = Flask(__name__)
 
 
 @app.route("/")
@@ -32,6 +33,15 @@ def login_page():
     except Exception as e:
         return render_template("login.html", error = e)
     
+@app.route("/register/", methods = ["GET", "POST"])
+def register_page():
+    
+    try:
+        c, conn = connection()
+        return "okay"
+    except Exception as e:
+        return string(e)
+
 
 @app.errorhandler(404)
 def page_not_found(e):
