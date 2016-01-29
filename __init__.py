@@ -46,7 +46,7 @@ class RegistrationForm(Form):
     password = PasswordField("Password", [validators.Required(),
                                           validators.EqualTo("confirm", message = "Passwords must match")])
     confirm = PasswordField("Repeat Password")
-    accept_tos = BooleanField('I accept the <a href="/tos/">Terms of Service</a> and the Privacy Notice', validators.Required())
+    accept_tos = BooleanField('I accept the <a href="/tos/">Terms of Service</a> and the Privacy Notice', [validators.Required()])
 
 
 @app.route("/register/", methods = ["GET", "POST"])
@@ -82,8 +82,11 @@ def register_page():
             return render_template("register.html", form = form)
 
     except Exception as e:
-        return string(e)
+        return str(e)
 
+@app.errorhandler(Exception)
+def exception_handler(error):
+    return "!!!!"  + repr(error)
 
 @app.errorhandler(404)
 def page_not_found(e):
