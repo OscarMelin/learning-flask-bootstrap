@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect
 from dbconnect import connection
 
+from wtforms import Form #?
+
 app = Flask(__name__)
 
 
@@ -32,7 +34,17 @@ def login_page():
 
     except Exception as e:
         return render_template("login.html", error = e)
-    
+
+
+class RegistrationForm(Form):
+    username = TextField("Username", [validators.Length(min = 4, max = 20)])
+    email = TextField("Email Address", [validators.Length(min = 6, max = 50)])
+    password = PasswordField("Password", [validators.Required(),
+                                          validators.EqualTo("confirm", message = "Passwords must match")])
+    confirm = passwordField("Repeat Password")
+    accept_tos = BooleanField('I accept the <a href="/tos/">Terms of Service</a> and the Privacy Notice', validators.Required())
+
+
 @app.route("/register/", methods = ["GET", "POST"])
 def register_page():
     
