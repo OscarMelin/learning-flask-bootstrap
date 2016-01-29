@@ -60,7 +60,7 @@ def register_page():
             password = sha256_crypt.encrypt(str(form.password.data))
             c, conn = connection()
 
-            ret = c.execute("SELECT * FROM users WHERE username = {0}".format(thwart(username)))
+            ret = c.execute("SELECT * FROM users WHERE username = ({0})".format(thwart(username)))
 
             if int(ret) > 0:    
                 return "Username taken"
