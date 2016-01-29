@@ -54,6 +54,7 @@ def register_page():
     
     try:
         form = RegistrationForm(request.form)
+
         if request.method == "POST" and form.validate():
             username = form.username.data
             email = form.email.data
@@ -75,7 +76,7 @@ def register_page():
                 session["logged_in"] = True
                 session["username"] = username
                 
-                return redirect(url_for(dashboard))
+                return redirect(url_for("dashboard"))
 
         return render_template("register.html", form = form)
 
