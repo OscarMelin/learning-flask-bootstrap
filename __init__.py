@@ -1,5 +1,11 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, session
 from dbconnect import connection
+
+from wtforms import Form, TextField, validators, PasswordField, BooleanField
+from passlib.hash import sha256_crypt
+from MySQLdb import escape_string as thwart
+
+import gc
 
 app = Flask(__name__)
 
@@ -28,17 +34,53 @@ def login_page():
             else:
                 error = "Fel fel blaha"
 
-        return render_template("login.html", error=error)
+        return render_template("login.html", error = error)
 
     except Exception as e:
         return render_template("login.html", error = e)
-    
+
+
+class RegistrationForm(Form):
+    username = TextField("Username", [validators.Length(min = 4, max = 20)])
+    email = TextField("Email Address", [validators.Length(min = 6, max = 50)])
+    password = PasswordField("Password", [validators.Required(),
+                                          validators.EqualTo("confirm", message = "Passwords must match")])
+    confirm = PasswordField("Repeat Password")
+    accept_tos = BooleanField('I accept the <a href="/tos/">Terms of Service</a> and the Privacy Notice', validators.Required())
+
+
 @app.route("/register/", methods = ["GET", "POST"])
 def register_page():
     
     try:
-        c, conn = connection()
-        return "okay"
+        form = RegistrationForm(request.form)
+
+        if request.method == "POST" and form.validate():
+            username = form.username.data
+            email = form.email.data
+            password = sha256_crypt.encrypt(str(form.password.data))
+            c, conn = connection()
+
+            ret = c.execute("SELECT * FROM users WHERE username = {0}".format(thwart(username)))
+
+            if int(len(ret)) > 0:    
+                return "Username taken"
+
+            else:
+                c.execute("INSERT INTO users (username, password, email, tracking) VALUES ({0}, {1}, {2}, {3})".format(thwart(username), thwart(password), thwart(email), thwart("")))
+                conn.commit()
+                c.close() #Close db connection, saves ram
+                conn.close()
+
+                gc.collect()
+
+                session["logged_in"] = True
+                session["username"] = username
+                
+                return redirect(url_for(dashboard))
+
+            return render_template("register.html", form = form)
+
     except Exception as e:
         return string(e)
 
