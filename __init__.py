@@ -59,14 +59,13 @@ def register_page():
             email = form.email.data
             password = sha256_crypt.encrypt(str(form.password.data))
             c, conn = connection()
-
-            ret = c.execute("SELECT * FROM users WHERE username = ({0})".format(thwart(username)))
+            ret = c.execute("SELECT * FROM users WHERE username = ('{0}');".format(thwart(username)))
 
             if int(ret) > 0:    
                 return "Username taken"
 
             else:
-                c.execute("INSERT INTO users (username, password, email) VALUES ({0}, {1}, {2})".format(thwart(username), thwart(password), thwart(email)))
+                c.execute("INSERT INTO users (username, password, email) VALUES ('{0}', '{1}', '{2}')".format(thwart(username), thwart(password), thwart(email)))
                 conn.commit()
                 c.close() #Close db connection, saves ram
                 conn.close()
