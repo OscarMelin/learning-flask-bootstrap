@@ -54,7 +54,6 @@ def register_page():
     
     try:
         form = RegistrationForm(request.form)
-
         if request.method == "POST" and form.validate():
             username = form.username.data
             email = form.email.data
@@ -67,7 +66,7 @@ def register_page():
                 return "Username taken"
 
             else:
-                c.execute("INSERT INTO users (username, password, email, tracking) VALUES ({0}, {1}, {2}, {3})".format(thwart(username), thwart(password), thwart(email), thwart("")))
+                c.execute("INSERT INTO users (username, password, email) VALUES ({0}, {1}, {2})".format(thwart(username), thwart(password), thwart(email)))
                 conn.commit()
                 c.close() #Close db connection, saves ram
                 conn.close()
@@ -79,14 +78,16 @@ def register_page():
                 
                 return redirect(url_for(dashboard))
 
-            return render_template("register.html", form = form)
+        return render_template("register.html", form = form)
+
+        
 
     except Exception as e:
         return str(e)
 
 @app.errorhandler(Exception)
 def exception_handler(error):
-    return "!!!!"  + repr(error)
+    return repr(error)
 
 @app.errorhandler(404)
 def page_not_found(e):
