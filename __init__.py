@@ -62,7 +62,7 @@ def register_page():
 
             ret = c.execute("SELECT * FROM users WHERE username = {0}".format(thwart(username)))
 
-            if int(len(ret)) > 0:    
+            if int(ret) > 0:    
                 return "Username taken"
 
             else:
