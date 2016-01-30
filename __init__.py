@@ -24,20 +24,32 @@ def login_page():
     error = None
 
     try:
+        c, conn = connection()
         if request.method == "POST":
-            attempted_username = request.form["username"]
-            attempted_password = request.form["password"]
             
+            data = c.execute("SELECT * FROM users WHERE username = ('{0}');".format(thwart(request.form["username"])))
+            data = c.fetchone()[2] #password
 
-            if attempted_username == "admin":
+            if int(data) == 0:
+                error = "Invalid credentials, try again."
+
+            if sha256_crypt.verify(request.form["password"], data):
+                session["logged_in"] = True
+                session["username"] = request.form["username"]
+
                 return redirect(url_for("dashboard"))
+
             else:
-                error = "Fel fel blaha"
+                error = "Invalid credentials, try again."
+
+        c.close() #Close db connection, saves ram
+        gc.collect()
 
         return render_template("login.html", error = error)
 
     except Exception as e:
-        return render_template("login.html", error = e)
+        error = "Invalid credentials, try again."
+        return render_template("login.html", error = error)
 
 
 class RegistrationForm(Form):
@@ -46,7 +58,7 @@ class RegistrationForm(Form):
     password = PasswordField("Password", [validators.Required(),
                                           validators.EqualTo("confirm", message = "Passwords must match")])
     confirm = PasswordField("Repeat Password")
-    accept_tos = BooleanField('I accept the <a href="/tos/">Terms of Service</a> and the Privacy Notice', [validators.Required()])
+    accept_tos = BooleanField('I accept the <a href="/tos/">Terms of Service</a> and the Privacy Notice', [validators.Required()]) 
 
 
 @app.route("/register/", methods = ["GET", "POST"])
@@ -76,7 +88,7 @@ def register_page():
                 session["logged_in"] = True
                 session["username"] = username
                 
-                return redirect(url_for("dashboard"))
+                return redirect(url_for("dashboard"ö))
 
         return render_template("register.html", form = form)
 
