@@ -48,7 +48,7 @@ def login_page():
         return render_template("login.html", error = error)
 
     except Exception as e:
-        error = "Invalid credentials, try again."
+        error = "Invalid credentials, try again. {0}".format(str(e))
         return render_template("login.html", error = error)
 
 
