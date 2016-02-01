@@ -4,6 +4,7 @@ from dbconnect import connection
 from wtforms import Form, TextField, validators, PasswordField, BooleanField
 from passlib.hash import sha256_crypt
 from MySQLdb import escape_string as thwart
+from functools import wraps
 
 import gc
 
@@ -26,8 +27,10 @@ def login_required(f):
         else:
             return redirect(url_for("login_page"))
 
+    return wrap
 
 @app.route("/logout/")
+@login_required
 def logout():
     session.clear()
     gc.collect()
