@@ -88,7 +88,7 @@ def register_page():
                 session["logged_in"] = True
                 session["username"] = username
                 
-                return redirect(url_for("dashboard"ö))
+                return redirect(url_for("dashboard"))
 
         return render_template("register.html", form = form)
 
