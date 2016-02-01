@@ -42,6 +42,11 @@ def login_page():
     error = None
 
     try:
+        #Already logged in
+        if session["logged_in"]:
+            return redirect(url_for("dashboard"))
+
+        #Else, establish db connection
         c, conn = connection()
         if request.method == "POST":
             
