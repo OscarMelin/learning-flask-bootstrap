@@ -26,7 +26,8 @@ def login_required(f):
         else:
             return redirect(url_for("login_page"))
 
-@app.route("/logout/"):
+
+@app.route("/logout/")
 def logout():
     session.clear()
     gc.collect()
