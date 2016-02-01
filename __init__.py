@@ -18,6 +18,20 @@ def homepage():
 def dashboard():
     return render_template("dashboard.html")
 
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "logged_in" in session:
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for("login_page"))
+
+@app.route("/logout/"):
+def logout():
+    session.clear()
+    gc.collect()
+    return redirect(url_for("homepage"))
+
 @app.route("/login/", methods = ["GET", "POST"])
 def login_page():
 
