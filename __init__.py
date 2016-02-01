@@ -30,9 +30,6 @@ def login_page():
             data = c.execute("SELECT * FROM users WHERE username = ('{0}');".format(thwart(request.form["username"])))
             data = c.fetchone()[2] #password
 
-            if int(data) == 0:
-                error = "Invalid credentials, try again."
-
             if sha256_crypt.verify(request.form["password"], data):
                 session["logged_in"] = True
                 session["username"] = request.form["username"]
